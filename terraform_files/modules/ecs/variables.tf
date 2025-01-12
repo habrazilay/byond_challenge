@@ -1,0 +1,9 @@
+variable "cluster_name" {}
+variable "family" {}
+variable "container_definitions" {}
+variable "memory" {}
+variable "cpu" {}
+variable "execution_role_arn" {}
+variable "desired_count" {}
+variable "subnets" {}
+variable "security_groups" {}

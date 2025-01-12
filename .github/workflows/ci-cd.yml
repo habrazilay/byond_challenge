@@ -58,21 +58,32 @@ jobs:
             echo "Invalid tag format. Use test-*, staging-* or prod-*"
             exit 1
           fi
+
+      # Print Environment Variables
       - name: Print Environment
-        run: echo "Environment: ${{ env.env }} Path: ${{ env.path }}"
+        run: |
+          echo "Environment: ${{ env.env }}"
+          echo "Terraform Path: ${{ env.path }}"
+
+      # Validate Terraform files
+      - name: Terraform Validate
+        run: terraform validate
+        working-directory: ${{ env.path }}
 
       # Terraform Init
       - name: Terraform Init
-        run: terraform init
+        run: terraform init -input=false
         working-directory: ${{ env.path }}
 
       # Terraform Plan
       - name: Terraform Plan
-        run: terraform plan -var-file=${{ env.env }}.tfvars
+        run: |
+          terraform plan -input=false -var-file=${{ env.env }}.tfvars
         working-directory: ${{ env.path }}
 
-      # Terraform Apply
+      # Terraform Apply (conditional on branch or tag)
       - name: Terraform Apply
         if: github.event_name == 'push'
-        run: terraform apply -auto-approve -var-file=${{ env.env }}.tfvars
+        run: |
+          terraform apply -input=false -auto-approve -var-file=${{ env.env }}.tfvars
         working-directory: ${{ env.path }}
